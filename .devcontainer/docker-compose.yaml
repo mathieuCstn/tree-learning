@@ -1,0 +1,32 @@
+services:
+  dev:
+    container_name: tree-learning_devcontainer
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sleep infinity
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-app}
+    ports:
+      - 8000:8000
+    volumes:
+      - ..:/workplaces:cached
+
+  database:
+    container_name: tree-learning_postgres
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-admin}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - tree-learning-volume:/var/lib/postgresql/data:rw
+volumes:
+  tree-learning-volume:
