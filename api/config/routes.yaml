@@ -3,8 +3,6 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
-
-# api/config/routes.yaml
-auth:
-    path: /login
+auth:   # [TODO]: Faire fonctionner le controller SecurityController.php et la route "/api/login".
+    path: /auth
     methods: ['POST']
