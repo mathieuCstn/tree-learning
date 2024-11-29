@@ -14,18 +14,16 @@ class AppFixtures extends Fixture
     ){}
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
-
-        $user = new User();
-        $user
-            ->setFirstName('johndoe')
-            ->setPassword($this->userPasswordHasher->hashPassword($user, 'password'))
-            ->setEmail('johndoe@example.com')
+        $adminUser = new User();
+        $adminUser
+            ->setFirstName('john')
+            ->setLastName('doe')
+            ->setPassword($this->userPasswordHasher->hashPassword($adminUser, 'password'))
+            ->setEmail('admin@example.com')
+            ->setRoles(['ROLE_ADMIN'])
         ;
         
-        $manager->persist($user);
-
+        $manager->persist($adminUser);
         $manager->flush();
     }
 }
