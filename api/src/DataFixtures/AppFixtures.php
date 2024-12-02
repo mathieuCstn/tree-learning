@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -25,5 +26,7 @@ class AppFixtures extends Fixture
         
         $manager->persist($adminUser);
         $manager->flush();
+
+        UserFactory::createMany(19);
     }
 }
