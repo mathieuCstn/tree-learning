@@ -6,8 +6,10 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserDetailRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserDetailRepository::class)]
+#[UniqueEntity('account')]
 #[ApiResource]
 class UserDetail
 {
@@ -28,7 +30,7 @@ class UserDetail
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $personalWebsite = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'userDetail', cascade: ['persist', 'remove'])]
     private ?User $account = null;
 
     public function getId(): ?int
@@ -91,6 +93,16 @@ class UserDetail
 
     public function setAccount(?User $account): static
     {
+        // unset the owning side of the relation if necessary
+        if ($account === null && $this->account !== null) {
+            $this->account->setUserDetail(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($account !== null && $account->getUserDetail() !== $this) {
+            $account->setUserDetail($this);
+        }
+
         $this->account = $account;
 
         return $this;

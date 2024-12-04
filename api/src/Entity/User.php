@@ -88,6 +88,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: AssessmentSession::class, mappedBy: 'userAccount')]
     private Collection $assessmentSessions;
 
+    #[ORM\OneToOne(inversedBy: 'account', cascade: ['persist', 'remove'])]
+    private ?UserDetail $userDetail = null;
+
     public function __construct()
     {
         $this->degrees = new ArrayCollection();
@@ -360,6 +363,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $assessmentSession->setUserAccount(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUserDetail(): ?UserDetail
+    {
+        return $this->userDetail;
+    }
+
+    public function setUserDetail(?UserDetail $userDetail): static
+    {
+        $this->userDetail = $userDetail;
 
         return $this;
     }
