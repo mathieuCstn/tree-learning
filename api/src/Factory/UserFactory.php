@@ -51,7 +51,10 @@ final class UserFactory extends PersistentProxyObjectFactory{
     {
         return $this
             ->afterInstantiate(function(User $user): void {
-                $user->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()));
+                $user
+                    ->setPassword($this->userPasswordHasher->hashPassword($user, $user->getPassword()))
+                    ->addDegree(DegreeFactory::createOne())
+                ;
             })
         ;
     }

@@ -5,14 +5,14 @@ namespace App\Factory;
 use App\Entity\Degree;
 use App\Repository\DegreeRepository;
 use Doctrine\ORM\EntityRepository;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use Zenstruck\Foundry\Persistence\Proxy;
 use Zenstruck\Foundry\Persistence\ProxyRepositoryDecorator;
 
 /**
- * @extends PersistentProxyObjectFactory<Degree>
+ * @extends PersistentObjectFactory<Degree>
  */
-final class DegreeFactory extends PersistentProxyObjectFactory
+final class DegreeFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
