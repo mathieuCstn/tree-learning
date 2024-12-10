@@ -8,9 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: QuizRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: [
+        'groups' => ['quiz:read']
+    ],
+    denormalizationContext: [
+        'groups' => ['quiz:write']
+    ]
+)]
 class Quiz
 {
     #[ORM\Id]
@@ -19,24 +27,29 @@ class Quiz
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['quiz:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['quiz:read'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['quiz:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     /**
      * @var Collection<int, AssessmentSession>
      */
     #[ORM\OneToMany(targetEntity: AssessmentSession::class, mappedBy: 'quiz')]
+    #[Groups(['quiz:read'])]
     private Collection $assementsession;
 
     /**
      * @var Collection<int, Question>
      */
     #[ORM\ManyToMany(targetEntity: Question::class, inversedBy: 'quizzes')]
+    #[Groups(['quiz:read'])]
     private Collection $questions;
 
     /**

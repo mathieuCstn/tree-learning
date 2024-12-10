@@ -8,9 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ChoiceRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: [
+        'groups' => ['choice:read']
+    ],
+    denormalizationContext: [
+        'groups' => ['choice:write']
+    ]
+)]
 class Choice
 {
     #[ORM\Id]
@@ -19,6 +27,7 @@ class Choice
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['choice:read'])]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -28,6 +37,7 @@ class Choice
     private ?string $feedback = null;
 
     #[ORM\ManyToOne(inversedBy: 'choices', cascade:["persist"])]
+    #[Groups(['choice:read'])]
     private ?Question $question = null;
 
     /**

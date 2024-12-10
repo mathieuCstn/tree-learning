@@ -56,6 +56,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, Degree>
      */
     #[ORM\ManyToMany(targetEntity: Degree::class, inversedBy: 'users', cascade: ['persist'])]
+    #[Groups(['user:read'])]
     private Collection $degrees;
 
     /**
