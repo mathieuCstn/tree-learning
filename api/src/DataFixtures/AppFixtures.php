@@ -2,55 +2,62 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\User;
-use App\Entity\UserDetail;
 use App\Factory\DegreeFactory;
 use App\Factory\QuestionFactory;
 use App\Factory\QuizFactory;
 use App\Factory\UserFactory;
+use App\Factory\UserDetailFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private const NB_DEGREES = 10;
+    private const NB_QUESTIONS = 120;
+    private const NB_QUIZZES = 10;
+    private const NB_USERS = 19;
+    private const MIN_QUESTIONS_PER_QUIZ = 4;
+    private const MAX_QUESTIONS_PER_QUIZ = 16;
+    private const MAX_DEGREES_PER_USER = 4;
+
     public function __construct(
         private UserPasswordHasherInterface $userPasswordHasher
-    ){}
+    ) {}
+
     public function load(ObjectManager $manager): void
     {
-        DegreeFactory::createMany(10);
+        DegreeFactory::createMany(self::NB_DEGREES);
 
-        $adminUser = new User();
-        $adminUser
-            ->setFirstName('john')
-            ->setLastName('doe')
-            ->setPassword($this->userPasswordHasher->hashPassword($adminUser, 'password'))
-            ->setEmail('admin@example.com')
-            ->setRoles(['ROLE_ADMIN'])
-            ->addDegree(DegreeFactory::random())
-        ;
+        QuestionFactory::createMany(self::NB_QUESTIONS);
 
-        $adminUserDetail = new UserDetail();
-        $adminUserDetail
-            ->setBio('Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis illum, pariatur suscipit ullam ipsa recusandae cumque. Excepturi dignissimos dolores minima corporis iure! Doloribus laboriosam natus veritatis, nihil, laudantium quasi eaque.')
-            ->setGithubLink('https://github.com/johndoe')
-            ->setPersonalWebsite('johndoe.com')
-        ;
+        QuizFactory::createMany(self::NB_QUIZZES, function() {
+            $nbQuestions = rand(self::MIN_QUESTIONS_PER_QUIZ, self::MAX_QUESTIONS_PER_QUIZ);
 
-        $adminUser->setUserDetail($adminUserDetail);
+            return [
+                'questions' => QuestionFactory::randomRange($nbQuestions, $nbQuestions)
+            ];
+        });
 
-        $manager->persist($adminUserDetail);
-        $manager->persist($adminUser);
-        $manager->flush();
-
-        UserFactory::createMany(19, [
-            'degrees' => DegreeFactory::randomRange(0, 4)
+        UserFactory::createOne([
+            'firstName' => 'john',
+            'lastName' => 'doe',
+            'email' => 'admin@example.com',
+            'roles' => ['ROLE_ADMIN'],
+            'degrees' => DegreeFactory::randomRange(1, 3),
+            'userDetail' => UserDetailFactory::createOne([
+                'bio' => 'Lorem ipsum...',
+                'githubLink' => 'https://github.com/johndoe',
+                'personalWebsite' => 'johndoe.com'
+            ])
         ]);
 
-        QuestionFactory::createMany(120);
-        QuizFactory::createMany(10, [
-            'questions' => QuestionFactory::randomRange(4, 16)
-        ]);
+        UserFactory::createMany(self::NB_USERS, function() {
+            $nbDegrees = rand(0, self::MAX_DEGREES_PER_USER);
+            
+            return [
+                'degrees' => DegreeFactory::randomRange($nbDegrees, $nbDegrees)
+            ];
+        });
     }
 }
