@@ -55,7 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Degree>
      */
-    #[ORM\ManyToMany(targetEntity: Degree::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Degree::class, inversedBy: 'users', cascade: ['persist'])]
     private Collection $degrees;
 
     /**

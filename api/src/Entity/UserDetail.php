@@ -7,6 +7,7 @@ use App\Repository\UserDetailRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserDetailRepository::class)]
 #[UniqueEntity('account')]
@@ -19,15 +20,19 @@ class UserDetail
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read'])]
     private ?string $cv = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['user:read'])]
     private ?string $bio = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read'])]
     private ?string $githubLink = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read'])]
     private ?string $personalWebsite = null;
 
     #[ORM\OneToOne(mappedBy: 'userDetail', cascade: ['persist', 'remove'])]

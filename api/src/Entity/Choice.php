@@ -27,7 +27,7 @@ class Choice
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $feedback = null;
 
-    #[ORM\ManyToOne(inversedBy: 'choices')]
+    #[ORM\ManyToOne(inversedBy: 'choices', cascade:["persist"])]
     private ?Question $question = null;
 
     /**
@@ -58,12 +58,12 @@ class Choice
         return $this;
     }
 
-    public function isCorrect(): ?bool
+    public function getIsCorrect(): ?bool
     {
         return $this->is_correct;
     }
 
-    public function setCorrect(bool $is_correct): static
+    public function setIsCorrect(bool $is_correct): static
     {
         $this->is_correct = $is_correct;
 
