@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
+use App\Entity\UserDetail;
 use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -23,7 +24,17 @@ class AppFixtures extends Fixture
             ->setEmail('admin@example.com')
             ->setRoles(['ROLE_ADMIN'])
         ;
-        
+
+        $adminUserDetail = new UserDetail();
+        $adminUserDetail
+            ->setBio('Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis illum, pariatur suscipit ullam ipsa recusandae cumque. Excepturi dignissimos dolores minima corporis iure! Doloribus laboriosam natus veritatis, nihil, laudantium quasi eaque.')
+            ->setGithubLink('https://github.com/johndoe')
+            ->setPersonalWebsite('johndoe.com')
+        ;
+
+        $adminUser->setUserDetail($adminUserDetail);
+
+        $manager->persist($adminUserDetail);
         $manager->persist($adminUser);
         $manager->flush();
 

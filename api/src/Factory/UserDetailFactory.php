@@ -38,7 +38,8 @@ final class UserDetailFactory extends PersistentProxyObjectFactory{
         $userName = self::faker()->userName();
 
         return [
-            'cv' => self::faker()->file('assets/docs/cv', 'public/images/cv'),
+            // 'cv' => self::faker()->file('assets/docs/cv', 'public/images/cv'),
+            'cv' => 'assets/docs/cv',
             'bio' => self::faker()->text(),
             'githubLink' => 'https://github.com/'.$userName,
             'personalWebsite' => $userName.'.'.self::faker()->tld(),
