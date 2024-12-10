@@ -4,6 +4,9 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use App\Entity\UserDetail;
+use App\Factory\DegreeFactory;
+use App\Factory\QuestionFactory;
+use App\Factory\QuizFactory;
 use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -16,6 +19,8 @@ class AppFixtures extends Fixture
     ){}
     public function load(ObjectManager $manager): void
     {
+        DegreeFactory::createMany(10);
+
         $adminUser = new User();
         $adminUser
             ->setFirstName('john')
@@ -23,6 +28,7 @@ class AppFixtures extends Fixture
             ->setPassword($this->userPasswordHasher->hashPassword($adminUser, 'password'))
             ->setEmail('admin@example.com')
             ->setRoles(['ROLE_ADMIN'])
+            ->addDegree(DegreeFactory::random())
         ;
 
         $adminUserDetail = new UserDetail();
@@ -38,6 +44,13 @@ class AppFixtures extends Fixture
         $manager->persist($adminUser);
         $manager->flush();
 
-        UserFactory::createMany(19);
+        UserFactory::createMany(19, [
+            'degrees' => DegreeFactory::randomRange(0, 4)
+        ]);
+
+        QuestionFactory::createMany(120);
+        QuizFactory::createMany(10, [
+            'questions' => QuestionFactory::randomRange(4, 16)
+        ]);
     }
 }
