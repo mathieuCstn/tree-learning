@@ -27,18 +27,18 @@ class Question
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['question:read'])]
+    #[Groups(['question:read','quiz:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['question:read'])]
+    #[Groups(['question:read','quiz:read'])]
     private ?string $content = null;
 
     /**
      * @var Collection<int, Choice>
      */
     #[ORM\OneToMany(targetEntity: Choice::class, mappedBy: 'question')]
-    #[Groups(['question:read'])]
+    #[Groups(['question:read','quiz:read'])]
     private Collection $choices;
 
     /**

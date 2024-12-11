@@ -27,7 +27,7 @@ class Choice
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['choice:read'])]
+    #[Groups(['choice:read','quiz:read'])]
     private ?string $content = null;
 
     #[ORM\Column]
