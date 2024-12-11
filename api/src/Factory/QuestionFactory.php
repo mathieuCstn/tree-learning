@@ -46,7 +46,7 @@ final class QuestionFactory extends PersistentProxyObjectFactory
     {
         return $this
             ->afterInstantiate(function (Question $question): void {
-                $numberOfChoice = rand(1, 5);
+                // $numberOfChoice = rand(1, 5);
                 $responsesIsCodeSnippets = self::faker()->boolean(10);
 
                 ChoiceFactory::createOne([
@@ -56,12 +56,14 @@ final class QuestionFactory extends PersistentProxyObjectFactory
                     'feedback' => self::faker()->text(40)
                 ]);
 
-                ChoiceFactory::createMany($numberOfChoice, [
-                    'question' => $question,
-                    'content' => $responsesIsCodeSnippets ? self::faker()->randomElement($this->getCodeSnippets()) : self::faker()->sentence(3),
-                    'is_correct' => self::faker()->boolean(20),
-                    'feedback' => self::faker()->text(40)
-                ]);
+                ChoiceFactory::createRange(1, 5, function() use ($question, $responsesIsCodeSnippets) {
+                    return [
+                        'question' => $question,
+                        'content' => $responsesIsCodeSnippets ? self::faker()->randomElement($this->getCodeSnippets()) : self::faker()->sentence(3),
+                        'is_correct' => self::faker()->boolean(20),
+                        'feedback' => self::faker()->text(40)
+                    ];
+                });
             });
     }
 
