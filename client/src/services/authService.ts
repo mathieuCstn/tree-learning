@@ -61,10 +61,76 @@ export const fetchQuizzes = async (): Promise<ApiResponse<Quiz>> => {
     return data;
 };
 
-export const fetchQuestions = async (): Promise<Question[]> => {
-  const { data } = await API.get<Question[]>("/api/questions");
+export const fetchQuizById = async (id: string): Promise<Quiz> => {
+  const { data } = await API.get<Quiz>(`/api/quizzes/${id}`);
   return data;
 };
+
+export const saveSessionQuizChoice = async (
+  assessmentsessionId: string,
+  choiceId: string,
+): Promise<void> => {
+  const requestData = {
+    assessmentsession: assessmentsessionId,
+    choice: choiceId,
+  };
+
+  await API.post("/api/session_quiz_choices", requestData, {
+    headers: {
+      "Content-Type": "application/ld+json",
+    },
+  });
+};
+
+  export const patchAssessmentSession = async(
+    assessmentsessionId: string,
+    statusString: string
+  ):  Promise<void> => {
+    const requestData = {
+      assessmentsession: assessmentsessionId,
+      status: statusString,
+    };
+  
+    await API.patch("/api/assessment_sessions", requestData, {
+      headers: {
+        "Content-Type": "application/ld+json",
+      },
+    });
+  };
+
+
+
+export const fetchQuestions = async (): Promise<ApiResponse<Question>> => {
+  const { data } = await API.get<ApiResponse<Question>>("/api/questions");
+  return data;
+};
+
+export const fetchUsers = async (): Promise<ApiResponse<User>> => {
+  const { data } = await API.get<ApiResponse<User>>("/api/users");
+  return data;
+}
+
+export const fetchUserDetails = async (id: string): Promise<ApiResponse<User>> => {
+  const { data } = await API.get<ApiResponse<User>>(id);
+  return data;
+};
+
+export const createAssessmentSession = async (userId: string, quizId: string): Promise<AssessmentSession> => {
+  const requestData = {
+    userAccount: userId,
+    quiz: quizId,
+  }
+  const { data } = await API.post<AssessmentSession>(
+    "/api/assessment_sessions", 
+    requestData,
+    {
+      headers: {
+        'Content-Type': 'application/ld+json'
+      }
+    }
+  );
+  return data;
+}
 
 export const login = async (credentials: { email: string; password: string }): Promise<User> => {
     const { data } = await API.post<{ token: string }>("/auth", credentials);
