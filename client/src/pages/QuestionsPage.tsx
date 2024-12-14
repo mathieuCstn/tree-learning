@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
 import { fetchQuestions, Question } from "../services/authService";
 
-interface Question {
-    "@id": string;
-    "@type": string;
-    title: string;
-    choices: string[];
-}
-
 const QuestionsPage = () => {
     const [questions, setQuestions] = useState<Question[]>([]);
+      const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {

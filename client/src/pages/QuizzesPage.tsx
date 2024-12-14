@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchQuizzes } from "../services/authService";
-
-interface Quiz {
-  "@id": string;
-  "@type": string;
-  title: string;
-  description: string;
-  created_at: string;
-  questions: string[];
-}
+import { fetchQuizzes, Quiz } from "../services/authService";
 
 const QuizzesPage = (): JSX.Element => {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);

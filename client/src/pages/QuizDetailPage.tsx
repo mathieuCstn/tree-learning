@@ -1,29 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import API from "../services/api";
-
-type Choice = {
-  "@id": string;
-  "@type": string;
-  content: string;
-};
-
-type Question = {
-  "@id": string;
-  "@type": string;
-  title: string;
-  content?: string;
-  choices: Choice[];
-};
-
-interface QuizDetail {
-  "@id": string;
-  "@type": string;
-  title: string;
-  description: string;
-  created_at: string;
-  questions: Question[];
-}
+import { Quiz } from "../services/authService";
 
 const QuizDetailPage = (): JSX.Element => {
   const { id } = useParams();

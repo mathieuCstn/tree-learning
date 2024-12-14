@@ -2,25 +2,62 @@ import API from "./api";
 import { jwtDecode } from "jwt-decode";
 
 export interface User {
-  username: string;
+  "@id": string;
+  "@type": string;
+  username?: string;
+  first_name: string;
+  last_name: string;
+  email: string;
   roles: string[];
+  degrees: Degree[];
+  assessmentSessions: AssessmentSession[];
+}
+
+export interface Degree {
+  "@id": string;
+  "@type": string;
+  name: string;
+  obtained_at: string;
+}
+
+export interface AssessmentSession {
+  "@id": string;
+  "@type": string;
+  completed_at?: string;
+  userAccount: User|string;
+  quiz: Quiz|string;
+  status: string;
 }
 
 export interface Quiz {
-  id: number;
+  "@id": string;
+  "@type": string;
   title: string;
   description: string;
-  member: []
+  created_at: string;
+  questions: Question[];
 }
 
 export interface Question {
-  id: number;
+  "@id": string;
+  "@type": string;
   title: string;
-  member: []
+  content?: string;
+  choices: Choice[];
 }
 
-export const fetchQuizzes = async (): Promise<Quiz[]> => {
-    const { data } = await API.get<Quiz[]>("/api/quizzes");
+export interface Choice {
+  "@id": string;
+  "@type": string;
+  content: string;
+}
+
+export interface ApiResponse<DataType> {
+  member: DataType[]
+}
+
+export const fetchQuizzes = async (): Promise<ApiResponse<Quiz>> => {
+    const { data } = await API.get<ApiResponse<Quiz>>("/api/quizzes");
     return data;
 };
 
