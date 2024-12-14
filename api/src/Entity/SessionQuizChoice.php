@@ -4,9 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\SessionQuizChoiceRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SessionQuizChoiceRepository::class)]
@@ -17,9 +14,6 @@ class SessionQuizChoice
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-    private ?int $score = null;
 
     #[ORM\ManyToOne(inversedBy: 'sessionQuizChoices')]
     private ?AssessmentSession $assessmentsession = null;
@@ -34,18 +28,6 @@ class SessionQuizChoice
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getScore(): ?int
-    {
-        return $this->score;
-    }
-
-    public function setScore(?int $score): static
-    {
-        $this->score = $score;
-
-        return $this;
     }
 
     public function getAssessmentsession(): ?AssessmentSession

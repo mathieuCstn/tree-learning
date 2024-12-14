@@ -8,30 +8,42 @@ use App\Repository\AssessmentSessionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: AssessmentSessionRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: [
+        'groups' => ['assessment_session:read']
+    ],
+    denormalizationContext: [
+        'groups' => ['assessment_session:write']
+    ]
+)]
 class AssessmentSession
 {
+    //todo: ajouter un status pending, completed, validated
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
+    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $completed_at = null;
 
     #[ORM\ManyToOne(inversedBy: 'assessmentSessions')]
+    #[Groups(['assessment_session:read','assessment_session:write'])]
     private ?User $userAccount = null;
 
     /**
      * @var Collection<int, SessionQuizChoice>
      */
     #[ORM\OneToMany(targetEntity: SessionQuizChoice::class, mappedBy: 'assessmentsession')]
+    #[Groups(['assessment_session:read','assessment_session:write', 'user:read'])]
     private Collection $sessionQuizChoices;
 
     #[ORM\ManyToOne(inversedBy: 'assementsession')]
+    #[Groups(['assessment_session:read','assessment_session:write', 'user:read'])]
     private ?Quiz $quiz = null;
 
     #[ORM\Column(enumType: AssessmentSessionStatus::class)]
@@ -53,7 +65,7 @@ class AssessmentSession
         return $this->completed_at;
     }
 
-    public function setCompletedAt(\DateTimeImmutable $completed_at): static
+    public function setCompletedAt(?\DateTimeImmutable $completed_at): static
     {
         $this->completed_at = $completed_at;
 

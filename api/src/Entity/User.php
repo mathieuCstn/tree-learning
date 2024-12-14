@@ -44,6 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     /**
@@ -87,9 +88,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection<int, AssessmentSession>
      */
     #[ORM\OneToMany(targetEntity: AssessmentSession::class, mappedBy: 'userAccount')]
+    #[Groups(['user:read'])]
     private Collection $assessmentSessions;
 
-    #[ORM\OneToOne(inversedBy: 'account', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'account', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?UserDetail $userDetail = null;
 
     public function __construct()

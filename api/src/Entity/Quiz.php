@@ -27,15 +27,15 @@ class Quiz
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['quiz:read'])]
+    #[Groups(['quiz:read', 'user:read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['quiz:read'])]
+    #[Groups(['quiz:read', 'user:read'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['quiz:read'])]
+    #[Groups(['quiz:read', 'user:read'])]
     private ?\DateTimeImmutable $created_at = null;
 
     /**

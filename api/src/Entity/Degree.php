@@ -8,9 +8,17 @@ use App\Repository\DegreeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: DegreeRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: [
+        'groups' => ['degree:read']
+    ],
+    denormalizationContext: [
+        'groups' => ['degree:write']
+    ]
+)]
 class Degree
 {
     #[ORM\Id]
@@ -19,6 +27,7 @@ class Degree
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['degree:read', 'user:read'])]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true, enumType: DegreeLevel::class)]
@@ -27,7 +36,10 @@ class Degree
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $speciality = null;
 
+    //! On a une relation "many to many" avec les utilisateurs. Nous nous retrouvons donc avec la même date pour un diplôme spécifique pour tous les utilisateurs liés.
+    //todo: Soit Degree est individuel à chaque utilisateur, soit nous avons une entité supplémentaire pour enregistrer la date.
     #[ORM\Column(nullable: true)]
+    #[Groups(['degree:read'])]
     private ?\DateTimeImmutable $obtained_at = null;
 
     /**
