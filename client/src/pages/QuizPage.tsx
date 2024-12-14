@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Quiz, Question, Choice, fetchQuizById, saveSessionQuizChoice, fetchSessionQuizChoices, deleteSessionQuizChoice } from "../services/authService";
+import { Quiz, Question, Choice, fetchQuizById, saveSessionQuizChoice, fetchSessionQuizChoices, deleteSessionQuizChoice, patchAssessmentSession } from "../services/authService";
 
 const QuizPage = (): JSX.Element => {
   const { quizId } = useParams<{ quizId: string }>(); // Paramètre de l'URL
@@ -68,10 +68,21 @@ const QuizPage = (): JSX.Element => {
       setError("Impossible de sauvegarder votre réponse.");
     }
   };
-
-  const handleSubmit = () => {
-    alert("Quiz terminé !");
-    navigate("/assessment-sessions"); // Redirection après soumission
+  
+  const handleSubmit = async () => {
+    if (!quiz || !sessionId) {
+      setError("Quiz ou session non disponible");
+      return;
+    }
+  
+    try {
+      await patchAssessmentSession(sessionId, 'completed');
+      alert("Quiz terminé !");
+      navigate("/assessment-sessions");
+    } catch (err) {
+      console.error("Erreur lors de la mise à jour du statut :", err);
+      setError("Impossible de terminer le quiz.");
+    }
   };
 
   if (loading) return <p>Chargement du quiz...</p>;

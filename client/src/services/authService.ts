@@ -25,7 +25,7 @@ export interface AssessmentSession {
   "@type": string;
   completed_at?: string;
   userAccount: User|string;
-  quiz: Quiz|string;
+  quiz: Quiz;
   status: string;
 }
 
@@ -94,13 +94,13 @@ export const patchAssessmentSession = async(
   statusString: string
 ):  Promise<void> => {
   const requestData = {
-    assessmentsession: assessmentsessionId,
     status: statusString,
   };
 
-  await API.patch("/api/assessment_sessions", requestData, {
+  await API.patch(assessmentsessionId, requestData, {
     headers: {
-      "Content-Type": "application/ld+json",
+      "Content-Type": "application/merge-patch+json",
+      "Accept": "application/ld+json",
     },
   });
 };
@@ -115,8 +115,8 @@ export const fetchUsers = async (): Promise<ApiResponse<User>> => {
   return data;
 }
 
-export const fetchUserDetails = async (id: string): Promise<ApiResponse<User>> => {
-  const { data } = await API.get<ApiResponse<User>>(id);
+export const fetchUserDetails = async (id: string): Promise<User> => {
+  const { data } = await API.get<User>(id);
   return data;
 };
 
