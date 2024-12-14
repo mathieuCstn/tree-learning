@@ -16,6 +16,7 @@ const LoginPage = (): JSX.Element => {
       loginUser(user);
       navigate("/dashboard");
     } catch (err) {
+      console.error("Error fetching user:", err);
       setError("Invalid credentials");
     }
   };
