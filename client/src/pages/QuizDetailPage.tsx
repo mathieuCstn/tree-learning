@@ -5,16 +5,17 @@ import { Quiz } from "../services/authService";
 
 const QuizDetailPage = (): JSX.Element => {
   const { id } = useParams();
-  const [quiz, setQuiz] = useState<QuizDetail | null>(null);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuizDetail = async () => {
       try {
-        const { data } = await API.get<QuizDetail>(`/api/quizzes/${id}`);
+        const { data } = await API.get<Quiz>(`/api/quizzes/${id}`);
         setQuiz(data);
       } catch (err) {
+        console.error("Error fetching quiz:", err);
         setError("Failed to load quiz details.");
       } finally {
         setLoading(false);
