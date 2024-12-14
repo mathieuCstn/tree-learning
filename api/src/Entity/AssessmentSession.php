@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Enum\AssessmentSessionStatus;
 use App\Repository\AssessmentSessionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -33,6 +34,9 @@ class AssessmentSession
     #[ORM\ManyToOne(inversedBy: 'assementsession')]
     private ?Quiz $quiz = null;
 
+    #[ORM\Column(enumType: AssessmentSessionStatus::class)]
+    #[Groups(['assessment_session:read','assessment_session:write', 'user:read'])]
+    private ?AssessmentSessionStatus $status = AssessmentSessionStatus::PENDING;
 
     public function __construct()
     {
@@ -106,6 +110,18 @@ class AssessmentSession
     public function setQuiz(?Quiz $quiz): static
     {
         $this->quiz = $quiz;
+
+        return $this;
+    }
+
+    public function getStatus(): ?AssessmentSessionStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(AssessmentSessionStatus $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

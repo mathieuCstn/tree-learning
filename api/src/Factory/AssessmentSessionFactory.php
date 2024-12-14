@@ -38,6 +38,7 @@ final class AssessmentSessionFactory extends PersistentProxyObjectFactory{
             'userAccount' => UserFactory::new(),
             'completed_at' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'quiz' => QuizFactory::new(),
+            'status' => 'pending',
         ];
     }
 
