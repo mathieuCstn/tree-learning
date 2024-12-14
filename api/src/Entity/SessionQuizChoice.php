@@ -2,11 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\SessionQuizChoiceRepository;
 use Doctrine\ORM\Mapping as ORM;
+// use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: SessionQuizChoiceRepository::class)]
+// #[UniqueEntity(['assessmentsession', 'choice'])]
+#[ORM\UniqueConstraint(
+    name: 'unique_session_choice', 
+    columns: ['assessmentsession_id', 'choice_id']
+)]
 #[ApiResource]
 class SessionQuizChoice
 {
@@ -16,6 +24,7 @@ class SessionQuizChoice
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'sessionQuizChoices')]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?AssessmentSession $assessmentsession = null;
 
     #[ORM\ManyToOne(inversedBy: 'sessionQuizChoices')]

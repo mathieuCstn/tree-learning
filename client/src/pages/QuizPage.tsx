@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Quiz, Question, Choice, fetchQuizById, saveSessionQuizChoice } from "../services/authService";
+import { Quiz, Question, Choice, fetchQuizById, saveSessionQuizChoice, fetchSessionQuizChoices, deleteSessionQuizChoice } from "../services/authService";
 
 const QuizPage = (): JSX.Element => {
   const { quizId } = useParams<{ quizId: string }>(); // Paramètre de l'URL
@@ -8,48 +8,63 @@ const QuizPage = (): JSX.Element => {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<{ [questionId: string]: string }>({});
+  const [selectedChoices, setSelectedChoices] = useState<Set<string>>(new Set());
 
   // Remplace par la méthode qui permet d'obtenir l'ID de session en cours
   const query = new URLSearchParams(location.search);
   const sessionId = query.get("assessmentSessionId"); // Exemple d'ID de session pour les réponses
 
-
   useEffect(() => {
-    const loadQuiz = async () => {
-      if (!quizId) {
-        setError("ID du quiz manquant.");
+    const loadQuizAndChoices = async () => {
+      if (!quizId || !sessionId) {
+        setError("ID du quiz ou de la session manquant.");
         setLoading(false);
         return;
       }
 
       try {
-        const quizData = await fetchQuizById(quizId); // Charger le quiz par ID
+        const [quizData, existingChoices] = await Promise.all([
+          fetchQuizById(quizId),
+          fetchSessionQuizChoices(sessionId)
+        ]);
+
         if (!quizData) {
           setError("Quiz introuvable.");
         } else {
           setQuiz(quizData);
+          // Convertir les choix existants en Set
+          const choicesSet = new Set(existingChoices.map(choice => choice.choice));
+          setSelectedChoices(choicesSet);
         }
       } catch (err) {
-        console.error("Erreur lors du chargement du quiz :", err);
-        setError("Impossible de charger le quiz.");
+        console.error("Erreur lors du chargement :", err);
+        setError("Impossible de charger les données.");
       } finally {
         setLoading(false);
       }
     };
 
-    loadQuiz();
-  }, [quizId]);
+    loadQuizAndChoices();
+  }, [quizId, sessionId]);
 
   const handleAnswerChange = async (choiceId: string) => {
-    setAnswers((prev) => ({ ...prev, choiceId }));
-
     try {
-      // Sauvegarder la réponse côté backend
-      await saveSessionQuizChoice(sessionId, choiceId);
-      console.log(`Réponse sauvegardée : Choix ${choiceId}`);
+      if(!sessionId) throw new Error('sessionId is null')
+      if (selectedChoices.has(choiceId)) {
+        // Supprimer le choix
+        await deleteSessionQuizChoice(sessionId, choiceId);
+        setSelectedChoices(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(choiceId);
+          return newSet;
+        });
+      } else {
+        // Ajouter le choix
+        await saveSessionQuizChoice(sessionId, choiceId);
+        setSelectedChoices(prev => new Set(prev).add(choiceId));
+      }
     } catch (err) {
-      console.error("Erreur lors de la sauvegarde de la réponse :", err);
+      console.error("Erreur lors de la modification de la réponse :", err);
       setError("Impossible de sauvegarder votre réponse.");
     }
   };
@@ -76,10 +91,10 @@ const QuizPage = (): JSX.Element => {
               <div key={choice["@id"]}>
                 <label>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name={question["@id"]}
                     value={choice["@id"]}
-                    checked={answers[question["@id"]] === choice["@id"]}
+                    checked={selectedChoices.has(choice["@id"])}
                     onChange={() => handleAnswerChange(choice["@id"])}
                   />
                   {choice.content}

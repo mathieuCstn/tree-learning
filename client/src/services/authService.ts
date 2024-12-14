@@ -29,6 +29,13 @@ export interface AssessmentSession {
   status: string;
 }
 
+export interface SessionQuizChoice {
+  "@id": string;
+  "@type": string;
+  assessmentsession: string;
+  choice: string;
+}
+
 export interface Quiz {
   "@id": string;
   "@type": string;
@@ -82,23 +89,21 @@ export const saveSessionQuizChoice = async (
   });
 };
 
-  export const patchAssessmentSession = async(
-    assessmentsessionId: string,
-    statusString: string
-  ):  Promise<void> => {
-    const requestData = {
-      assessmentsession: assessmentsessionId,
-      status: statusString,
-    };
-  
-    await API.patch("/api/assessment_sessions", requestData, {
-      headers: {
-        "Content-Type": "application/ld+json",
-      },
-    });
+export const patchAssessmentSession = async(
+  assessmentsessionId: string,
+  statusString: string
+):  Promise<void> => {
+  const requestData = {
+    assessmentsession: assessmentsessionId,
+    status: statusString,
   };
 
-
+  await API.patch("/api/assessment_sessions", requestData, {
+    headers: {
+      "Content-Type": "application/ld+json",
+    },
+  });
+};
 
 export const fetchQuestions = async (): Promise<ApiResponse<Question>> => {
   const { data } = await API.get<ApiResponse<Question>>("/api/questions");
@@ -131,6 +136,28 @@ export const createAssessmentSession = async (userId: string, quizId: string): P
   );
   return data;
 }
+
+export const fetchSessionQuizChoices = async (sessionId: string): Promise<SessionQuizChoice[]> => {
+  const { data } = await API.get<ApiResponse<SessionQuizChoice>>(`/api/session_quiz_choices`, {
+    params: {
+      'assessmentsession': sessionId
+    }
+  });
+  return data.member;
+};
+
+export const deleteSessionQuizChoice = async (
+  sessionId: string,
+  choiceId: string
+): Promise<void> => {
+  // Trouvez d'abord l'ID de l'enregistrement SessionQuizChoice
+  const choices = await fetchSessionQuizChoices(sessionId);
+  const choiceToDelete = choices.find(c => c.choice === choiceId);
+  
+  if (choiceToDelete) {
+    await API.delete(choiceToDelete["@id"]);
+  }
+};
 
 export const login = async (credentials: { email: string; password: string }): Promise<User> => {
     const { data } = await API.post<{ token: string }>("/auth", credentials);
